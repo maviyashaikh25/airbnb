@@ -8,6 +8,7 @@ const path = require('path');
 const debugSrc = path.join(__dirname, '..', 'node_modules', 'debug', 'src');
 const debugFile = path.join(debugSrc, 'debug.js');
 const idxFile = path.join(debugSrc, 'index.js');
+const mongodbTimeoutFile = path.join(__dirname, '..', 'node_modules', 'mongodb', 'lib', 'timeout.js');
 
 try {
   const shim = `module.exports = function debug() {\n  // minimal debug function stub - no-op\n  return function(){};\n};\n\n// Export common API expected by consumers and node.js file\nmodule.exports.formatters = {};\nmodule.exports.log = function(){};\nmodule.exports.init = function(){};\nmodule.exports.save = function(){};\nmodule.exports.load = function(){};\nmodule.exports.enable = function(){};\nmodule.exports.disable = function(){};\nmodule.exports.useColors = function() { return false; };\nmodule.exports.humanize = function() { return ''; };\n`;
@@ -37,4 +38,24 @@ try {
   }
 } catch (err) {
   console.error('Error in fix-debug postinstall script:', err);
+}
+
+// Ensure MongoDB timeout file exists (some installations on CI can miss publication files)
+try {
+  if (!fs.existsSync(mongodbTimeoutFile)) {
+    console.warn('mongodb/lib/timeout.js missing; creating minimal shim to prevent ModuleNotFound error.');
+    const shim = `class Timeout {
+  static expires() { return { clear() {} }; }
+  clear() {}
+}
+class TimeoutContext {
+  static create(options) { return { clear() {}, csotEnabled: () => false, clearServerSelectionTimeout: false, getRemainingTimeMSOrThrow: () => Infinity } }
+}
+module.exports = { Timeout, TimeoutContext };
+`;
+    fs.writeFileSync(mongodbTimeoutFile, shim, { encoding: 'utf8' });
+    console.log('Created minimal mongodb timeout shim.');
+  }
+} catch (err) {
+  console.error('Error when ensuring mongodb timeout file:', err);
 }

@@ -53,6 +53,25 @@ if (missing.length) {
   } catch (e) {
     console.warn('npm ls mongodb failed:', e.message);
   }
+  try {
+    const mongodbPkgPath = path.join(cwd, 'node_modules', 'mongodb', 'package.json');
+    if (fs.existsSync(mongodbPkgPath)) {
+      console.log('\nInstalled mongodb package.json:');
+      console.log(fs.readFileSync(mongodbPkgPath, 'utf8'));
+    } else {
+      console.warn('mongodb package.json not found in node_modules');
+    }
+  } catch (e) {
+    console.warn('Failed to read mongodb package.json:', e.message);
+  }
+  try {
+    console.log('\nChecking published package contents via `npm pack`');
+    const tarball = execSync('npm pack mongodb@6.21.0 --silent').toString().trim();
+    console.log('Created tarball:', tarball);
+    console.log(execSync(`tar -tf ${tarball} | grep timeout || true`).toString());
+  } catch (e) {
+    console.warn('Could not `npm pack` mongodb package or tar not available:', e.message);
+  }
   console.warn('\nIf these files are missing in CI, please use `npm ci` for deterministic install and clear the build cache on your host.');
   // Exit non-zero on purpose when running `node ./scripts/verify-install.js` directly in debugging mode
   if (process.argv.includes('--fail-on-missing')) process.exit(1);

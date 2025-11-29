@@ -36,9 +36,9 @@ module.exports.showListing=async (req, res, next) => {
             if (feature && feature.geometry) {
                 listing.geometry = feature.geometry;
                 await listing.save();
-                console.log('Backfilled geometry for listing', listing._id, listing.geometry);
+                // console.log('Backfilled geometry for listing', listing._id, listing.geometry);
             } else {
-                console.warn('No geocoding result to backfill geometry for listing', listing._id);
+                // console.warn('No geocoding result to backfill geometry for listing', listing._id);
             }
         }
     } catch (err) {

@@ -36,7 +36,7 @@
         <a class="nav-link" href="/signup"><b>Signup</b></a>
        <% } else { %>
         <!-- Safe display of username; fallback to 'Account' if username missing -->
-        <a class="nav-link nav-ad" href="/profile">Hello, <%= currentUser.username ? currentUser.username : 'Account' %></a>
+        <a class="nav-link nav-ad" >Hello, <%= currentUser.username ? currentUser.username : 'Account' %></a>
         <a class="nav-link" href="/logout">Logout</a>
        <% } %>
       </div>

@@ -17,4 +17,6 @@ Build & Deploy Notes
 - Use `npm ci` in CI/Hosts (like Render) to ensure clean installs using `package-lock.json`.
 - If your build logs show errors about missing files (e.g., `mongodb/lib/timeout.js`), try a clean reinstall and verify the build environment is running `npm ci` or `npm install` without errors.
 
+Rebuild trigger: small no-op tweak to cause a new build and diagnose install issues.
+
 

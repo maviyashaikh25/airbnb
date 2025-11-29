@@ -3,8 +3,15 @@ const path = require('path');
 
 const node = process.version;
 const cwd = process.cwd();
+const { execSync } = require('child_process');
 console.log(`Node.js: ${node}`);
 console.log(`CWD: ${cwd}`);
+try {
+  console.log('npm version:', execSync('npm -v').toString().trim());
+  console.log('npm registry:', execSync('npm config get registry').toString().trim());
+} catch (e) {
+  console.warn('Could not get npm info:', e.message);
+}
 
 function checkFile(p) {
   if (fs.existsSync(p)) {
@@ -40,6 +47,12 @@ if (missing.length) {
   console.warn('\nFiles missing; printing node_modules debug and mongodb directories (if present):');
   listDir(path.join(cwd, 'node_modules', 'debug', 'src'));
   listDir(path.join(cwd, 'node_modules', 'mongodb', 'lib'));
+  try {
+    console.log('\nDependency tree (npm ls mongodb):');
+    console.log(execSync('npm ls mongodb --depth=0 --json').toString());
+  } catch (e) {
+    console.warn('npm ls mongodb failed:', e.message);
+  }
   console.warn('\nIf these files are missing in CI, please use `npm ci` for deterministic install and clear the build cache on your host.');
   // Exit non-zero on purpose when running `node ./scripts/verify-install.js` directly in debugging mode
   if (process.argv.includes('--fail-on-missing')) process.exit(1);

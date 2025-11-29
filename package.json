@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node app.js",
     "prestart": "node ./scripts/verify-install.js || true",
-    "postinstall": "node ./scripts/fix-debug.js || true",
+    "postinstall": "node ./scripts/fix-debug.js || true && node ./scripts/verify-install.js --fail-on-missing",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

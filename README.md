@@ -12,4 +12,9 @@ npm install
 
 Consider updating or removing old dependencies that pull in legacy versions of `debug` (for example `connect` or old `connect-flash`).
 
+Build & Deploy Notes
+--------------------
+- Use `npm ci` in CI/Hosts (like Render) to ensure clean installs using `package-lock.json`.
+- If your build logs show errors about missing files (e.g., `mongodb/lib/timeout.js`), try a clean reinstall and verify the build environment is running `npm ci` or `npm install` without errors.
+
 

@@ -40,22 +40,12 @@ try {
   console.error('Error in fix-debug postinstall script:', err);
 }
 
-// Ensure MongoDB timeout file exists (some installations on CI can miss publication files)
+// Check for MongoDB timeout file (CI installations occasionally miss published files)
 try {
   if (!fs.existsSync(mongodbTimeoutFile)) {
-    console.warn('mongodb/lib/timeout.js missing; creating minimal shim to prevent ModuleNotFound error.');
-    const shim = `class Timeout {
-  static expires() { return { clear() {} }; }
-  clear() {}
-}
-class TimeoutContext {
-  static create(options) { return { clear() {}, csotEnabled: () => false, clearServerSelectionTimeout: false, getRemainingTimeMSOrThrow: () => Infinity } }
-}
-module.exports = { Timeout, TimeoutContext };
-`;
-    fs.writeFileSync(mongodbTimeoutFile, shim, { encoding: 'utf8' });
-    console.log('Created minimal mongodb timeout shim.');
+    console.warn('mongodb/lib/timeout.js missing; this indicates a corrupted or partial install of the mongodb package.');
+    console.warn('Please try reinstalling dependencies with `npm ci` or verify your build environment.');
   }
 } catch (err) {
-  console.error('Error when ensuring mongodb timeout file:', err);
+  console.error('Error when checking for mongodb timeout file:', err);
 }
